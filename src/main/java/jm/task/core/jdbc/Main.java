@@ -10,7 +10,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) throws SQLException {
         UserService userService = new UserServiceImpl();
-        List<User> beginList = new ArrayList<>();
+       /* List<User> beginList = new ArrayList<>();
         List<User> resultList;
         for (int i = 0; i < 4; i++) {
             beginList.add(new User("UserN" + i, "UserL" + i, Byte.valueOf((byte) (Math.random() * 127))));
@@ -24,7 +24,7 @@ public class Main {
         for (User o : resultList) {
             System.out.println(o);
         }
-        userService.cleanUsersTable();
+        userService.cleanUsersTable();*/
         userService.dropUsersTable();
     }
 }

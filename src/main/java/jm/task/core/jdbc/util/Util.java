@@ -17,6 +17,8 @@ public class Util {
         return connection;
     }
 
+
+
     public static synchronized Util getInstance() {
         if(util == null){
             util = new Util();

@@ -22,7 +22,7 @@ public class UserDaoJDBCImpl implements UserDao {
         String messageExists = "CREATE TABLE " + TABLE_USERS +
                 "(id bigint auto_increment primary key, " +
                 "name varchar (30) not null, " +
-                "lastname varchar (30) not null, " +
+                "lastName varchar (30) not null, " +
                 "age smallint not null)";
         try (Connection connection = util.getConnection()) {
             Statement statement = connection.createStatement();
