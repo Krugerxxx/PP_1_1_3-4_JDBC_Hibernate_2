@@ -5,6 +5,7 @@ import jm.task.core.jdbc.util.Util;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import javax.persistence.PersistenceException;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
 public class UserDaoHibernateImpl implements UserDao {
     private final String TABLE_USERS = "users";
     private Util util = Util.getInstance();
+    private Transaction transaction = null;
 
     public UserDaoHibernateImpl() {
     }
@@ -24,10 +26,11 @@ public class UserDaoHibernateImpl implements UserDao {
                     "name VARCHAR (30) NOT NULL, " +
                     "lastName VARCHAR (30) NOT NULL, " +
                     "age SMALLINT NOT NULL)";
-            session.beginTransaction();
+            transaction = session.beginTransaction();
             session.createSQLQuery(sql).executeUpdate();
             session.getTransaction().commit();
         } catch (IllegalStateException | PersistenceException e) {
+            transactionRollBack();
             System.out.println("Ошибка при создании таблицы");
             StackTraceElement[] element = e.getStackTrace();
             for (StackTraceElement o : element) {
@@ -40,10 +43,11 @@ public class UserDaoHibernateImpl implements UserDao {
     public void dropUsersTable() {
         try (Session session = util.getSession()) {
             String sql = "DROP TABLE " + TABLE_USERS;
-            session.beginTransaction();
+            transaction = session.beginTransaction();
             session.createSQLQuery(sql).executeUpdate();
             session.getTransaction().commit();
         } catch (IllegalStateException | PersistenceException e) {
+            transactionRollBack();
             System.out.println("Ошибка при удалении таблицы");
             StackTraceElement[] element = e.getStackTrace();
             for (StackTraceElement o : element) {
@@ -55,10 +59,11 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void saveUser(String name, String lastName, byte age) {
         try (Session session = util.getSession()) {
-            session.beginTransaction();
+            transaction = session.beginTransaction();
             session.save(new User(name, lastName, age));
             session.getTransaction().commit();
         } catch (IllegalStateException | PersistenceException e) {
+            transactionRollBack();
             System.out.println("Ошибка при добалении данных в таблицу");
             StackTraceElement[] element = e.getStackTrace();
             for (StackTraceElement o : element) {
@@ -70,11 +75,12 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void removeUserById(long id) {
         try (Session session = util.getSession()) {
-            session.beginTransaction();
+            transaction = session.beginTransaction();
             User user = session.load(User.class, id);
             session.delete(user);
             session.getTransaction().commit();
         } catch (IllegalStateException | PersistenceException e) {
+            transactionRollBack();
             System.out.println("Ошибка при удалении данных из таблицы");
             StackTraceElement[] element = e.getStackTrace();
             for (StackTraceElement o : element) {
@@ -100,15 +106,22 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void cleanUsersTable() {
         try (Session session = util.getSession()) {
-            session.beginTransaction();
+            transaction = session.beginTransaction();
             session.createQuery("DELETE FROM User").executeUpdate();
             session.getTransaction().commit();
         } catch (IllegalStateException | PersistenceException e) {
+            transactionRollBack();
             System.out.println("Ошибка при очистке таблицы");
             StackTraceElement[] element = e.getStackTrace();
             for (StackTraceElement o : element) {
                 System.out.println(o);
             }
+        }
+    }
+
+    private void transactionRollBack() {
+        if (transaction != null) {
+            transaction.rollback();
         }
     }
 }
