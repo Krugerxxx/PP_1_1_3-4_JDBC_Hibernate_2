@@ -7,9 +7,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
 import javax.persistence.PersistenceException;
-import javax.persistence.QueryTimeoutException;
-import javax.persistence.RollbackException;
-import javax.persistence.TransactionRequiredException;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
